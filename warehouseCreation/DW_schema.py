@@ -81,11 +81,11 @@ olistdw_OrderDateFact_table = """
 IF object_id('OrderDateFact') is null
 CREATE TABLE OrderDateFact (
 order_id VARCHAR(100) 
-order_purchase_timestamp_key DATETIME,
-order_approved_at_key DATETIME,
-order_delivered_carrier_date_key DATETIME,
-order_delivered_customer_date_key DATETIME,
-order_estimated_delivery_date_key DATETIME,
+order_purchase_timestamp_key INT,
+order_approved_at_key INT,
+order_delivered_carrier_date_key INT,
+order_delivered_customer_date_key INT,
+order_estimated_delivery_date_key INT,
 FOREIGN KEY (order_id)
 REFERENCES OrderFact(order_id)
 FOREIGN KEY (order_purchase_timestamp_key,order_approved_at_key,order_delivered_carrier_date_key, order_delivered_customer_date_key, order_estimated_delivery_date_key)
