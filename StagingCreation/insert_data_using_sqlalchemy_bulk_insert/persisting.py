@@ -19,7 +19,7 @@ connection_string = r"Driver={ODBC Driver 17 for SQL Server};Server=tcp:192.168.
 connection_url=URL.create("mssql+pyodbc",query={"odbc_connect": connection_string})
 engine=create_engine(connection_url)
 
-def upload_data_with_core(session,table,data_path):
+def upload_data(session,table,data_path):
     data_path=data_path.format(table.__tablename__)
     try:
         with open(data_path,'r',encoding="utf-8") as inputfile:
@@ -37,7 +37,6 @@ def upload_data_with_core(session,table,data_path):
 list_of_class=[customers,sellers,products,orders,geolocation,order_payments,order_items,order_reviews]
 
 def main():
-    table_list=Base.metadata.sorted_tables
     print("Creating table...")
     #Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -46,7 +45,7 @@ def main():
     data_path = "S:\\dataRepo\\olistdataset\\olist_{}_dataset.csv"
     print("data uploading is started......")
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        {executor.submit(upload_data_with_core, session, table, data_path): table for table in list_of_class}
+        {executor.submit(upload_data, session, table, data_path): table for table in list_of_class}
     print("data uploading stoped....")
 
 if __name__ == "__main__":
