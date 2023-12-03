@@ -6,10 +6,10 @@ import DW_schema
 
 
 #have to create two engines for database(olist) and datawarehouse(olistDW) both
-db_connection_string = r"Driver={ODBC Driver 17 for SQL Server};Server=tcp:192.168.0.104,1433;Database=olist;Uid=prasad;Pwd=Suraj123;TrustServerCertificate=yes;Connection Timeout=30;"
+db_connection_string = r"Driver={ODBC Driver 17 for SQL Server};Server=tcp:192.168.0.101,1433;Database=olist;Uid=prasad;Pwd=Suraj123;TrustServerCertificate=yes;Connection Timeout=30;"
 db_engine=create_engine(URL.create("mssql+pyodbc", query={"odbc_connect": db_connection_string}))
 
-dw_connection_string = r"Driver={ODBC Driver 17 for SQL Server};Server=tcp:192.168.0.104,1433;Database=olistDW;Uid=dwadmin;Pwd=Suraj123;TrustServerCertificate=yes;Connection Timeout=30;"
+dw_connection_string = r"Driver={ODBC Driver 17 for SQL Server};Server=tcp:192.168.0.101,1433;Database=olistDW;Uid=dwadmin;Pwd=Suraj123;TrustServerCertificate=yes;Connection Timeout=30;"
 dw_engine=create_engine(URL.create("mssql+pyodbc", query={"odbc_connect": dw_connection_string}))
 
 with db_engine.connect() as conn:
@@ -67,12 +67,12 @@ with dw_engine.connect() as conn:
             case "datedim":
                 print(f"insert started for {table_name}")
                 insert_data(table_name,Datedim_df,conn)
-            case "orderfact":
-                print(f"insert started for {table_name}")
-                insert_data(table_name,order_fact_df,conn)
             case "orderdatefact":
                 print(f"insert started for {table_name}")
                 insert_data(table_name,order_date_fact_df,conn)
+            case "orderfact":
+                print(f"insert started for {table_name}")
+                insert_data(table_name,order_fact_df,conn)
             case "reviewdim":
                 print(f"insert started for {table_name}")
                 insert_data(table_name,Reviewdim_df,conn)
