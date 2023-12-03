@@ -10,20 +10,9 @@ def create_PaymentTypedim(order_payments_df):
     PaymentTypedim_df=payment_id_df.with_columns(payment_type.select("payment_type")) #using with_columns add new column from other dataframe
     return PaymentTypedim_df
 
-def create_Datedim(orders_df):  #provide order datframe to find range of dates in between orders are placed
-    # purchase_timestamp_df=orders_df.select("order_purchase_timestamp")
-    # order_estimated_delivery_date=orders_df.select("order_estimated_delivery_date")
-    # min_date=purchase_timestamp_df.min()
-    # max_date=order_estimated_delivery_date.max()
-    # start_date=str(min_date.select(pl.col("order_purchase_timestamp").dt.month_start().dt.date()).to_numpy()[0][0])
-    # end_date=str(max_date.select(pl.col("order_estimated_delivery_date").dt.month_end().dt.date()).to_numpy()[0][0])
-    from datetime import datetime,date
-    start_date="1900-01-01"  #we use this date because if order is processing or canceled this date is updated in delivered date fields
-    end_date="2018-12-31"
+def transform_to_datedim(dataframe):
     #pl.expr.dt use for manipulate temporal data
-    date_range_df=pl.date_range(datetime.strptime(start_date,"%Y-%m-%d"),datetime.strptime(end_date,"%Y-%m-%d"),"1d",eager=True).to_frame("FullDate")
-    
-    date_df=date_range_df.select(pl.col("FullDate").dt.to_string("%Y%m%d").cast(pl.Int64).alias("DateKey"),
+    date_df=dataframe.select(pl.col("FullDate").dt.to_string("%Y%m%d").cast(pl.Int64).alias("DateKey"),
                                  pl.col("FullDate").dt.date(), #without alias function it take same column name
                                  pl.col("FullDate").dt.year().alias("Year"),
                                  pl.col("FullDate").dt.month().alias("MonthOfYear"),
@@ -34,6 +23,22 @@ def create_Datedim(orders_df):  #provide order datframe to find range of dates i
                                  pl.col("FullDate").dt.quarter().alias("Quarter")
                                  )
     return date_df
+def create_Datedim(orders_df):  #provide order datframe to find range of dates in between orders are placed
+    # purchase_timestamp_df=orders_df.select("order_purchase_timestamp")
+    # order_estimated_delivery_date=orders_df.select("order_estimated_delivery_date")
+    # min_date=purchase_timestamp_df.min()
+    # max_date=order_estimated_delivery_date.max()
+    # start_date=str(min_date.select(pl.col("order_purchase_timestamp").dt.month_start().dt.date()).to_numpy()[0][0])
+    # end_date=str(max_date.select(pl.col("order_estimated_delivery_date").dt.month_end().dt.date()).to_numpy()[0][0])
+    from datetime import datetime,date
+    start_date="2016-01-01"  
+    end_date="2018-12-31"
+    #we use this date because if order is processing or canceled this date is updated in delivered date fields
+    excepted_date_df=pl.DataFrame({"FullDate":[datetime.strptime("1900-01-01","%Y-%m-%d")]})
+    date_range_df=pl.date_range(datetime.strptime(start_date,"%Y-%m-%d"),datetime.strptime(end_date,"%Y-%m-%d"),"1d",eager=True).to_frame("FullDate")
+    all_date_df=pl.concat([excepted_date_df,date_range_df])
+    datedim_df=transform_to_datedim(all_date_df)
+    return datedim_df
 
 def create_Reviewdim(order_reviews_df):
     return order_reviews_df.drop("review_id")
